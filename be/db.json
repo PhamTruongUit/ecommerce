@@ -1,0 +1,50 @@
+{
+    "01": {
+        "id": "01",
+        "name": "sach 1",
+        "price": "1000",
+        "url": "./img/01.jpg"
+    },
+    "02": {
+        "id": "02",
+        "name": "sach 2",
+        "price": "2000",
+        "url": "./img/02.jpg"
+    },
+    "03": {
+        "id": "03",
+        "name": "sach 3",
+        "price": "3000",
+        "url": "./img/03.jpg"
+    },
+    "04": {
+        "id": "04",
+        "name": "sach 4",
+        "price": "4000",
+        "url": "./img/04.jpg"
+    },
+    "05": {
+        "id": "05",
+        "name": "sach 5",
+        "price": "5000",
+        "url": "./img/05.jpg"
+    },
+    "06": {
+        "id": "06",
+        "name": "sach 6",
+        "price": "6000",
+        "url": "./img/06.jpg"
+    },
+    "07": {
+        "id": "07",
+        "name": "sach 7",
+        "price": "7000",
+        "url": "./img/07.jpg"
+    },
+    "08": {
+        "id": "08",
+        "name": "sach 8",
+        "price": "8000",
+        "url": "./img/08.jpg"
+    }
+}

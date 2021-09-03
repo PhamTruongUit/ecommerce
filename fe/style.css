@@ -1,0 +1,95 @@
+body{
+    margin: 0;
+    position: relative;
+}
+div{
+    display: block;
+}
+
+.info {
+    display: flex;
+    font-size: 14px;
+    color: rgb(91, 50, 226);
+    margin-left: 10%;
+    margin-right: 10%;
+    justify-content: space-between;
+}
+
+.navbar{
+    position: relative;
+    width: 100px;
+    margin-left: 75%;
+    margin-bottom: 25px;
+}
+.shoppingButton{
+    border: none;
+    background-color: #ffffff;
+}
+.column{
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    height: 100%;
+    width: 1000px;
+}
+.container{
+    height: 400px;
+    width: 200px;
+    margin: auto;
+    justify-content: space-between;
+}
+.bookImg{
+    width: 100%;
+    height: 75%;
+}
+.bookName{
+    font-size: 16px;
+}
+.bookPrice{
+    font-size: 18px !important;
+}
+.buyButton{
+    font-size: 13px;
+    height: 20px;
+    width: 80px;
+    margin-top: 0 !important;
+    margin-left: calc((100% - 80px) /2 );
+}
+.text{
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.main{
+    z-index: 0;
+}
+.box{
+    display: none;
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+.popUp{
+    display: none;
+    height: 60%;
+    width: 45%;
+    background-color: rgb(238, 225, 225);
+    color: black;
+    border-radius: 10px;
+}
+.closeButton{
+    background-color: rgb(238, 225, 225);
+    margin-top: 0.6%;
+    margin-left: 92.5%;
+    border-radius: 10px;
+    font-size: 25px;
+    width: 7%;
+    height: 7%;
+    border: none;
+}
+.closeButton:hover{
+    background-color:rgba(230, 114, 114, 0.568)
+}
