@@ -63,6 +63,7 @@ div{
 .main{
     z-index: 0;
 }
+/* cart */
 .box{
     display: none;
     height: 100%;
@@ -92,4 +93,24 @@ div{
 }
 .closeButton:hover{
     background-color:rgba(230, 114, 114, 0.568)
+}
+table{
+    margin: auto;
+}
+.colsp{
+    width: 250px;
+    
+}
+.col{
+    width: 115px;
+}
+.colm{
+    width: 230px;
+}
+td div{
+    display: flex;
+}
+.value{
+    justify-content:center;
+    margin: auto;
 }
