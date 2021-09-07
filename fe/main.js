@@ -1,5 +1,6 @@
 window.onload = function() {
     listenEven()
+    let bool = false
     function listenEven(){
         const temp = []
         const buyButton = document.querySelectorAll('.buyButton')
@@ -21,6 +22,7 @@ window.onload = function() {
             box.style.display = 'flex'
             box.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'
             popUp.style.display = 'block'
+            // bool === false ? setdata(temp) : null
             setdata(temp)
         })
 
@@ -33,84 +35,92 @@ window.onload = function() {
     }
 
     //test
-    // box.style.display = 'flex'
-    // box.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'
-    // popUp.style.display = 'block'
+    const popUp = document.querySelector('.popUp')
+    const box = document.querySelector('.box')
+    box.style.display = 'flex'
+    box.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'
+    popUp.style.display = 'block'
     setdata(['01','02','03','02'])
-    
-    // fetch data cart from server
+
     function setdata (temp) {
         const keys = Array.from(new Set(temp))
         const count = count_obj(keys,temp)
-        const server = "http://localhost:3000"
-        let info = []
-        keys.forEach((id)=>{
-            fetch(server + '/' + id)
-                .then ((rep) => rep.json())
-                .then ((obj) => info.push(obj))
-        })
-        return addCart({ info, count })
+        getdata(keys, count)
     }
 
+    function getdata (keys, count) {
+        const server = "http://localhost:3000"
+        const promise = new Promise(function (resolve, reject) {
+            resolve()
+            reject()
+        })
+        promise
+            .then(
+                keys.forEach((id)=>{
+                    fetch(server + '/' + id)
+                        .then ((rep) => rep.json())
+                        .then (function (rep) {
+                            rep['count'] = count[id]
+                            return rep
+                        })
+                        .then ((obj) => renderCart(obj))        
+                }))
+            .catch (console.error('disconected server'))
+            // .finally (calculate_price())  
+    }
     // count obj
     function count_obj(keys,pre_keys){
-        const count = []
+        const count = {}
         keys.forEach(id => {
             let sum = 0
             pre_keys.forEach(obj => {
                 if (obj == id) sum++
             })
-            count.push(sum)
+            count[id] = sum
         })
         return count
     }
 
-    function addCart(obj) {
-        console.log(obj)
-        console.log(obj.info)
-        console.log(obj.info[0])
-        console.log(obj.info.length)
-        for (let i = 0; i<obj.info.length; ++i)
-            {   
-                let url = obj.info[i].url
-                let name = obj.info[i].name
-                let price = obj.info[i].price
-                let count = obj.count[i]
-                render(url, name, price, count)
-            }
-        // debug
-        // console.log(obj)
+    function renderCart(obj) {
+        const parent = document.querySelector('.cart')
+        const child = document.querySelector('.sum')
+        const base = document.createElement('tr')
+                base.classList.add(`row_${obj.id}`)
+                base.classList.add('scrollable')
+        const htmls =`<td>
+                        <div class = 'boxsp'>
+                            <img class = 'imgsp' src="${obj.url}">
+                            <div class = 'name infosp'>${obj.name}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class = 'price infosp'>
+                            ${obj.price}
+                        </div>
+                    </td>
+                    <td>
+                        <div class = 'count infosp'>
+                            <button class = "increase">-</button>
+                            <div>${obj.count}</div>
+                            <button class = "decrease">+</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class = 'calculated infosp'>
+                            ${obj.price * obj.count}
+                        </div>
+                    </td>`
+        base.innerHTML = htmls
+        parent.insertBefore(base,child)
     }
 
-    // addCart
-    function render(url, name, price,count) {
-        const cart = document.querySelector('.cart')
-        const sum = document.querySelector('.sum')
-        addElementBase()
+    function calculate_price() {
+        const price = document.querySelector('.price')
+        const calculated = document.querySelectorAll('.calculated')
+        let sum = 0
+        calculated.forEach((a)=>{sum+=Number(a.innerText); console.log(sum)})
+        price.innerText = `${sum}đ` 
     }
-
-    function addElementBase(target, nameElement, attribute, style) {
-        // attribute and style are array 2d
-        try {
-            const [parent, child] = target
-            let base = document.createElement(nameElement)
-            
-            attribute.forEach((node) => {
-                const [property, value] = node
-                base.setAttribute(property, value)
-            })
-
-            style.forEach((node)=>{
-                const [property, value] = node
-                base.style[property] = value
-            })
-            parent.insertBefore(base,child)
-        }
-        catch (err) {
-            return console.error('err render')
-        } 
-    }
-
     // remove, add and subtract with default value = 1
     function fix(obj, id, type) {
         if (!type) return false
