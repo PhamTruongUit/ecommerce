@@ -29,18 +29,23 @@ div{
     cursor: pointer;
     background-color: #ffffff;
 }
-.column{
+.content{
     display: flex;
-    flex-direction: row;
-    margin: auto;
-    height: 100%;
-    width: 1000px;
+    justify-content: center;
+}
+.content-wrapper{
+    display: flex;
+    float: left;
+    width: 70%;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 .container{
     height: 400px;
     width: 200px;
-    margin: auto;
-    justify-content: space-between;
+    padding-left: 1%;
+    padding-right: 1%;
+    justify-content: space-around;
 }
 .bookImg{
     width: 100%;

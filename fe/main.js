@@ -1,6 +1,28 @@
 window.onload = function() {
-    listenEven()
-    let bool = false
+
+    fetchData()
+
+    function fetchData() {
+        const server = "http://localhost:3000/info"
+        fetch (server)
+            .then ((rep) => rep.json())
+            .then ((obj) => renderData(obj)) 
+    }
+    function renderData(obj) {
+        const parent = document.querySelector('.content-wrapper')
+        for (let val in obj) {
+            const htmls = `
+            <div class="container" id="${obj[val].id}">
+                <img class="bookImg" src="${obj[val].url}" alt="" >
+                <main class="bookName text">${obj[val].name}</main>
+                <p class="bookPrice text">Giá: ${obj[val].price}</p>
+                <button class="buyButton text" type="buttonsubmit">Chọn mua</button>
+            </div>`
+            parent.insertAdjacentHTML('beforeend',htmls) 
+        }
+        listenEven()
+    }
+
     function listenEven(){
         const temp = []
         const buyButton = document.querySelectorAll('.buyButton')
@@ -8,7 +30,8 @@ window.onload = function() {
         const shoppingButton = document.querySelector('.shoppingButton')
         const popUp = document.querySelector('.popUp')
         const box = document.querySelector('.box')
-
+        const increase = document.querySelectorAll('.increase')
+        const decrease = document.querySelectorAll('.decrease')
         // add obj
         buyButton.forEach((e)=> {
             e.addEventListener('click',() => {
@@ -16,57 +39,53 @@ window.onload = function() {
                 temp.push(id)
             })  
         })
-
-        //cart-shop
+        // cart-shop
         shoppingButton.addEventListener('click',() => {
             box.style.display = 'flex'
             box.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'
             popUp.style.display = 'block'
-            // bool === false ? setdata(temp) : null
             setdata(temp)
         })
-
-        //close pop-up
+        // close pop-up
         closeButton.addEventListener('click',() => {
             box.style.display = 'none'
             box.style.backgroundColor = 'none'
             popUp.style.display = 'none'
         })
+        // change value count
+        increase.forEach((e)=> {
+            e.addEventListener('click',() => {
+                const id = e.parentElement.parentElement.parentElement.id
+                temp.push(id.slice(1))
+                fixdata(temp)
+            })  
+        })
+        decrease.forEach((e)=> {
+            e.addEventListener('click',() => {
+                const id = e.parentElement.parentElement.parentElement.id
+                temp.push(id)
+                fixdata(temp)
+            })    
+        })
     }
-
-    //test
-    const popUp = document.querySelector('.popUp')
-    const box = document.querySelector('.box')
-    box.style.display = 'flex'
-    box.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'
-    popUp.style.display = 'block'
-    setdata(['01','02','03','02'])
 
     function setdata (temp) {
-        const keys = Array.from(new Set(temp))
-        const count = count_obj(keys,temp)
-        getdata(keys, count)
-    }
-
-    function getdata (keys, count) {
-        const server = "http://localhost:3000"
-        const promise = new Promise(function (resolve, reject) {
-            resolve()
-            reject()
+        const keys = Array.from(new Set(temp)) // id sp
+        const count = count_obj(keys,temp) // count sp
+        const info_sp = []
+        keys.forEach(function (id) {
+            const obj = document.getElementById(id)
+            const url = obj.children[0].attributes["src"].value
+            const name = obj.children[1].innerText
+            const price = obj.children[2].innerText.split(' ')[1]
+            const sp = {id: id, url : url, price: price, name: name, count: count[id]}
+            renderCart(sp)
+            info_sp.push(sp)
         })
-        promise
-            .then(
-                keys.forEach((id)=>{
-                    fetch(server + '/' + id)
-                        .then ((rep) => rep.json())
-                        .then (function (rep) {
-                            rep['count'] = count[id]
-                            return rep
-                        })
-                        .then ((obj) => renderCart(obj))        
-                }))
-            .catch (console.error('disconected server'))
-            // .finally (calculate_price())  
+        console.log('keys: ', keys)
+        console.log('count: ', count)
+        console.log(info_sp)
+        calculate_price()
     }
     // count obj
     function count_obj(keys,pre_keys){
@@ -85,7 +104,7 @@ window.onload = function() {
         const parent = document.querySelector('.cart')
         const child = document.querySelector('.sum')
         const base = document.createElement('tr')
-                base.classList.add(`row_${obj.id}`)
+                base.setAttribute('id',`c${obj.id}`)
                 base.classList.add('scrollable')
         const htmls =`<td>
                         <div class = 'boxsp'>
@@ -94,15 +113,15 @@ window.onload = function() {
                         </div>
                     </td>
                     <td>
-                        <div class = 'price infosp'>
+                        <div class = 'infosp'>
                             ${obj.price}
                         </div>
                     </td>
                     <td>
-                        <div class = 'count infosp'>
-                            <button class = "increase">-</button>
+                        <div class = 'infosp'>
+                            <button class = "decrease">-</button>
                             <div>${obj.count}</div>
-                            <button class = "decrease">+</button>
+                            <button class = "increase">+</button>
                         </div>
                     </td>
                     <td>
@@ -115,37 +134,23 @@ window.onload = function() {
     }
 
     function calculate_price() {
-        const price = document.querySelector('.price')
+        const price = document.getElementById('price')
         const calculated = document.querySelectorAll('.calculated')
         let sum = 0
-        calculated.forEach((a)=>{sum+=Number(a.innerText); console.log(sum)})
+        calculated.forEach((a)=>sum+=Number(a.innerText))
         price.innerText = `${sum}đ` 
+        listenEven()
     }
     // remove, add and subtract with default value = 1
-    function fix(obj, id, type) {
-        if (!type) return false
-        else
-            for (let i = 0; i<obj.info.length; ++i)
-                if (obj.info[i].id == id)
-                    {
-                        if (type === 'remove')
-                        {
-                            let info = obj.info.slice(0,i).concat(obj.info.slice(i+1))
-                            let count = obj.count.slice(0,i).concat(obj.count.slice(i+1))
-                            return { info , count } 
-                        }
-                        else if (type === 'increase')
-                        {
-                            obj.count[i]++
-                            return obj
-                        }
-                        else if (type === 'decrease')
-                        {
-                            obj.count[i]--
-                            if (obj.count[i] === 0) 
-                                return fix(obj, id, type = 'remove')
-                            else return obj 
-                        }
-                    }     
+    function calculated(obj, type = 'none') {
+        if (type === 'none') return null
+        else if (type === 'increase')
+        {
+
+        }
+        else if (type === 'decrease')
+        {
+
+        }
     }
 }
