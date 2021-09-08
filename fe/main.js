@@ -4,9 +4,10 @@ window.onload = function() {
 
     function fetchData() {
         const server = "http://localhost:3000/info"
-        fetch (server)
+            fetch (server)
             .then ((rep) => rep.json())
-            .then ((obj) => renderData(obj)) 
+            .catch ((err) => console.error('Disconnected from server'))  
+            .then ((obj) => renderData(obj))
     }
     function renderData(obj) {
         const parent = document.querySelector('.content-wrapper')
@@ -20,55 +21,59 @@ window.onload = function() {
             </div>`
             parent.insertAdjacentHTML('beforeend',htmls) 
         }
-        listenEven()
+        mainEvent()
     }
 
-    function listenEven(){
+    function mainEvent(){
         const temp = []
         const buyButton = document.querySelectorAll('.buyButton')
-        const closeButton = document.querySelector('.closeButton')
         const shoppingButton = document.querySelector('.shoppingButton')
         const popUp = document.querySelector('.popUp')
         const box = document.querySelector('.box')
-        const increase = document.querySelectorAll('.increase')
-        const decrease = document.querySelectorAll('.decrease')
         // add obj
         buyButton.forEach((e)=> {
-            e.addEventListener('click',() => {
+            e.addEventListener('click', function() {
                 const id = e.parentElement.id
                 temp.push(id)
             })  
         })
         // cart-shop
-        shoppingButton.addEventListener('click',() => {
+        shoppingButton.addEventListener('click',function() {
             box.style.display = 'flex'
             box.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'
             popUp.style.display = 'block'
             setdata(temp)
         })
+    }
+    function popupEvent() {
+        const increase = document.querySelectorAll('.increase')
+        const decrease = document.querySelectorAll('.decrease')
+        const popUp = document.querySelector('.popUp')
+        const box = document.querySelector('.box')
+        const closeButton = document.querySelector('.closeButton')
         // close pop-up
-        closeButton.addEventListener('click',() => {
+        closeButton.addEventListener('click',function() {
             box.style.display = 'none'
             box.style.backgroundColor = 'none'
             popUp.style.display = 'none'
+            const list = document.querySelector('.sum').parentElement.children
+            for (let i = 0; i < list.length-1; i++) {
+                list[i].remove()}
         })
         // change value count
         increase.forEach((e)=> {
-            e.addEventListener('click',() => {
+            e.addEventListener('click',function() {
                 const id = e.parentElement.parentElement.parentElement.id
-                temp.push(id.slice(1))
-                fixdata(temp)
+                fixdata(id, 'increase')
             })  
         })
         decrease.forEach((e)=> {
-            e.addEventListener('click',() => {
+            e.addEventListener('click',function() {
                 const id = e.parentElement.parentElement.parentElement.id
-                temp.push(id)
-                fixdata(temp)
+                fixdata(id, 'decrease')
             })    
         })
     }
-
     function setdata (temp) {
         const keys = Array.from(new Set(temp)) // id sp
         const count = count_obj(keys,temp) // count sp
@@ -82,9 +87,6 @@ window.onload = function() {
             renderCart(sp)
             info_sp.push(sp)
         })
-        console.log('keys: ', keys)
-        console.log('count: ', count)
-        console.log(info_sp)
         calculate_price()
     }
     // count obj
@@ -138,19 +140,34 @@ window.onload = function() {
         const calculated = document.querySelectorAll('.calculated')
         let sum = 0
         calculated.forEach((a)=>sum+=Number(a.innerText))
-        price.innerText = `${sum}đ` 
-        listenEven()
+        price.innerHTML = `<b>${sum}</b>` 
+        popupEvent()
     }
     // remove, add and subtract with default value = 1
-    function calculated(obj, type = 'none') {
-        if (type === 'none') return null
-        else if (type === 'increase')
-        {
+    function fixdata(id, type = '') {
+        const obj = document.getElementById(id)
+        const current_obj = obj.children[2].children[0].children[1]
+        const price_obj = obj.children[1]
+        const sum_obj = obj.children[3] 
+        const price = document.getElementById('price')
 
+        if (type === 'increase')
+        {
+            current_obj.innerText = Number(current_obj.innerText) + 1
+            price.innerHTML = `<b>${Number(price.innerText) + Number(price_obj.innerText)}</b>`
         }
         else if (type === 'decrease')
         {
-
+            if (current_obj.innerText > 1) {
+                current_obj.innerText = Number(current_obj.innerText) - 1
+            }
+            else {
+                obj.remove()
+            }
+            price.innerHTML = `<b>${Number(price.innerText) - Number(price_obj.innerText)}</b>`
         }
+        sum_obj.innerHTML = `<div class = 'calculated infosp'>
+                            ${Number(current_obj.innerText) * Number(price_obj.innerText)}
+                        </div>`
     }
 }

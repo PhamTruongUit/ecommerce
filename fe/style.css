@@ -161,6 +161,13 @@ div{
 }
 table{
     margin: auto;
+    width: 90%;
+}
+th {
+    background-color: #FDDF95;  
+}
+.infosp button {
+    margin: auto
 }
 .colsp{
     width: 250px; 
